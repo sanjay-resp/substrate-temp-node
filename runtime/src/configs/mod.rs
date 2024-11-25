@@ -42,10 +42,19 @@ use sp_version::RuntimeVersion;
 use super::{
 	AccountId, Aura, Balance, Balances, Block, BlockNumber, Hash, Nonce, PalletInfo, Runtime,
 	RuntimeCall, RuntimeEvent, RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, RuntimeTask,
-	System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION,
+	RandomnessCollectiveFlip, Timestamp, System, EXISTENTIAL_DEPOSIT, SLOT_DURATION, VERSION, MILLI_UNIT
 };
 
 const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
+
+/// Charge fee for stored bytes and items as part of `pallet-contracts`.
+///
+/// The slight difference to general `deposit` function is because there is fixed bound on how large
+/// the DB key can grow so it doesn't make sense to have as high deposit per item as in the general
+/// approach.
+const fn contracts_deposit(items: u32, bytes: u32) -> Balance {
+	items as Balance * 40 * MILLI_UNIT + (bytes as Balance) * MILLI_UNIT
+}
 
 parameter_types! {
 	pub const BlockHashCount: BlockNumber = 2400;
@@ -159,4 +168,63 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type WeightInfo = pallet_template::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
+
+parameter_types! {
+	pub const DepositPerItem: Balance = contracts_deposit(1, 0);
+	pub const DepositPerByte: Balance = contracts_deposit(0, 1);
+	pub const DefaultDepositLimit: Balance = contracts_deposit(16, 16 * 1024);
+	pub const MaxValueSize: u32 = 16 * 1024;
+	// The lazy deletion runs inside on_initialize.
+	// pub DeletionWeightLimit: Weight = AVERAGE_ON_INITIALIZE_RATIO * RuntimeBlockWeights::get().max_block;
+	pub const DeletionQueueDepth: u32 = 128;
+	pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
+	pub const CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
+	// TODO: re-vist to make sure values are appropriate
+	pub const MaxDelegateDependencies: u32 = 32;
+}
+
+impl pallet_contracts::Config for Runtime {
+	type Time = Timestamp;
+	type Randomness = RandomnessCollectiveFlip;
+	type Currency = Balances;
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+
+	/// The safest default is to allow no calls at all.
+	///
+	/// Runtimes should whitelist dispatchables that are allowed to be called from contracts
+	/// and make sure they are stable. Dispatchables exposed to contracts are not allowed to
+	/// change because that would break already deployed contracts. The `Call` structure itself
+	/// is not allowed to change the indices of existing pallets, too.
+	type CallFilter = frame_support::traits::Nothing;
+	type DepositPerItem = DepositPerItem;
+	type DepositPerByte = DepositPerByte;
+	type WeightPrice = pallet_transaction_payment::Pallet<Self>;
+	type WeightInfo = pallet_contracts::weights::SubstrateWeight<Self>;
+	type ChainExtension = ();
+	type Schedule = Schedule;
+	type CallStack = [pallet_contracts::Frame<Self>; 5];
+	type AddressGenerator = pallet_contracts::DefaultAddressGenerator;
+	type MaxStorageKeyLen = ConstU32<128>;
+	type MaxTransientStorageSize = ConstU32<{ 1024 * 1024}>;
+	type MaxCodeLen = ConstU32<{ 123 * 1024 }>;
+
+	type MaxDebugBufferLen = ConstU32<{ 2 * 1024 * 1024 }>;
+	type UnsafeUnstableInterface = ConstBool<false>;
+	type DefaultDepositLimit = DefaultDepositLimit;
+
+	type CodeHashLockupDepositPercent = CodeHashLockupDepositPercent;
+	type MaxDelegateDependencies = MaxDelegateDependencies;
+	type RuntimeHoldReason = RuntimeHoldReason;
+	type Migrations = ();
+	type Debug = ();
+	type Environment = ();
+	type Xcm = ();
+	type ApiVersion = ();
+
+	type UploadOrigin = frame_system::EnsureSigned<Self::AccountId>;
+	type InstantiateOrigin = frame_system::EnsureSigned<Self::AccountId>;
 }
