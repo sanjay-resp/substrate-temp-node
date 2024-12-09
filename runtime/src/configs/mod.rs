@@ -170,6 +170,12 @@ impl pallet_template::Config for Runtime {
 	type WeightInfo = pallet_template::weights::SubstrateWeight<Runtime>;
 }
 
+impl pallet_file_tracking::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = pallet_file_tracking::weights::SubstrateWeight<Runtime>;
+	type MaxFiles = ConstU32<1000>;
+}
+
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {

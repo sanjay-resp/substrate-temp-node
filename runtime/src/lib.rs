@@ -227,4 +227,7 @@ mod runtime {
 
 	#[runtime::pallet_index(9)]
 	pub type Contracts = pallet_contracts;
+
+	#[runtime::pallet_index(10)]
+	pub type FileOwnerShip = pallet_file_tracking;
 }
