@@ -9,6 +9,7 @@ use core::marker::PhantomData;
 
 pub trait WeightInfo {
 	fn store_file_info() -> Weight;
+    fn remove_file() -> Weight;
 }
 
 /// Weights for pallet_template using the Substrate node and recommended hardware.
@@ -22,12 +23,26 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
             .saturating_add(RocksDbWeight::get().writes(1_u64)) // Write to storage.
 	}
 
+	fn remove_file() -> Weight {
+
+        Weight::from_parts(8_000_000, 0) // Base execution weight (adjust after benchmarks).
+            .saturating_add(RocksDbWeight::get().reads(1_u64))  // Read from storage.
+            .saturating_add(RocksDbWeight::get().writes(1_u64)) // Write to storage.
+	}
+
 }
 
 // For backwards compatibility and tests
 impl WeightInfo for () {
 	fn store_file_info() -> Weight {
         Weight::from_parts(10_000_000, 0) // Base execution weight (adjust after benchmarks).
+            .saturating_add(RocksDbWeight::get().reads(1_u64))  // Read from storage.
+            .saturating_add(RocksDbWeight::get().writes(1_u64)) // Write to storage.
+	}
+
+    fn remove_file() -> Weight {
+
+        Weight::from_parts(8_000_000, 0) // Base execution weight (adjust after benchmarks).
             .saturating_add(RocksDbWeight::get().reads(1_u64))  // Read from storage.
             .saturating_add(RocksDbWeight::get().writes(1_u64)) // Write to storage.
 	}

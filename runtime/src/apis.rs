@@ -127,6 +127,12 @@ impl_runtime_apis! {
 		}
 	}
 
+	// impl pallet_file_tracking::FileOwnedApi<Block, AccountId, BlockNumber> for Runtime {
+	// 	fn get_files_owned(account: AccountId) -> Vec<[u8; 32]> {
+	// 		pallet_file_tracking::FilesOwned::<Runtime>::get(account)
+	// 			.into_inner() // Convert `BoundedVec` to `Vec`
+	// 	}
+	// }
 	impl sp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION
