@@ -9,6 +9,7 @@ edition = "2021"
 members = [
     "node",
     "pallets/file-tracking",
+    "pallets/node-onboarder-tracker",
     "pallets/template",
     "runtime",
 ]

@@ -114,6 +114,7 @@ runtime-benchmarks = [
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-contracts/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
+	"pallet-file-tracking/runtime-benchmarks",
 ]
 
 try-runtime = [
@@ -130,6 +131,7 @@ try-runtime = [
 	"pallet-transaction-payment/try-runtime",
 	"pallet-contracts/try-runtime",
 	"sp-runtime/try-runtime",
+	"pallet-file-tracking/try-runtime",
 ]
 
 # Enable the metadata hash generation.
