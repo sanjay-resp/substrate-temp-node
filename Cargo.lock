@@ -8429,6 +8429,7 @@ dependencies = [
  "pallet-file-tracking",
  "pallet-grandpa",
  "pallet-insecure-randomness-collective-flip",
+ "pallet-node-tracker",
  "pallet-sudo",
  "pallet-template",
  "pallet-timestamp",

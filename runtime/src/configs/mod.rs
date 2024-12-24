@@ -26,7 +26,7 @@
 // Substrate and Polkadot dependencies
 use frame_support::{
 	derive_impl, parameter_types,
-	traits::{ConstBool, ConstU128, ConstU32, ConstU64, ConstU8, VariantCountOf},
+	traits::{ConstBool, ConstU128, ConstU32, ConstU64, ConstU8, Currency, VariantCountOf},
 	weights::{
 		constants::{RocksDbWeight, WEIGHT_REF_TIME_PER_SECOND},
 		IdentityFee, Weight,
@@ -176,6 +176,15 @@ impl pallet_file_tracking::Config for Runtime {
 	type MaxFiles = ConstU32<1000>;
 }
 
+impl pallet_node_tracker::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type WeightInfo = pallet_node_tracker::weightinfo::SubstrateWeight<Runtime>;
+	type Currency = Balances;
+	type Balance = Balance;
+	type MaxSnapshot = ConstU32<10>;
+	type MaxNodes = ConstU32<100>;
+
+}
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {

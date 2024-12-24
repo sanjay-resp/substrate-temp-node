@@ -8,7 +8,6 @@ use frame_support::{ pallet_prelude::*, BoundedVec};
 #[scale_info(skip_type_params(T))]
 pub struct NodeInfo{
     pub node_id: [u8;32],
-    pub owner: [u8;32],
     pub registered_time: u64,
     pub status: bool,
     pub capacity: u64

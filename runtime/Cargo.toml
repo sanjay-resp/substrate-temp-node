@@ -50,6 +50,7 @@ frame-benchmarking = { optional = true, workspace = true }
 frame-system-benchmarking = { optional = true, workspace = true }
 pallet-template.workspace = true
 pallet-file-tracking.workspace =true
+pallet-node-tracker.workspace = true
 pallet-contracts.workspace = true
 pallet-insecure-randomness-collective-flip.workspace = true
 
@@ -78,6 +79,7 @@ std = [
 	"pallet-sudo/std",
 	"pallet-template/std",
 	"pallet-file-tracking/std",
+	"pallet-node-tracker/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
@@ -115,6 +117,7 @@ runtime-benchmarks = [
 	"pallet-contracts/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"pallet-file-tracking/runtime-benchmarks",
+	"pallet-node-tracker/runtime-benchmarks",
 ]
 
 try-runtime = [
@@ -132,6 +135,7 @@ try-runtime = [
 	"pallet-contracts/try-runtime",
 	"sp-runtime/try-runtime",
 	"pallet-file-tracking/try-runtime",
+	"pallet-node-tracker/try-runtime",
 ]
 
 # Enable the metadata hash generation.
