@@ -230,4 +230,7 @@ mod runtime {
 
 	#[runtime::pallet_index(10)]
 	pub type FileOwnerShip = pallet_file_tracking;
+
+	// #[runtime::pallet_index(11)]
+	// pub type NodeTrackings = pallet_node_tracker;
 }

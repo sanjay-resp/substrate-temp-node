@@ -12,8 +12,7 @@ pub mod pallet {
     use super::*;
     use crate::structs::*;
     use crate::utils::*;
-    use crate::traits::*;
-    use crate::enums::NodeOnboardingError;
+
     use frame_support::Parameter;
     use frame_support::{dispatch::DispatchResult, pallet_prelude::{StorageValue, *}, traits::{Currency, ReservableCurrency,StorageVersion}, Blake2_128Concat, BoundedVec};
     use frame_system::pallet_prelude::*;
@@ -29,13 +28,14 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
         type WeightInfo: WeightInfo;
-        type Currency: ReservableCurrency<Self::AccountId>;
+        type Currency: ReservableCurrency<Self::AccountId, Balance = Self::Balance>;
 
         type Balance: Parameter
             + From<u128>
             + Into<u128>
-            +Default
-            + Copy;
+            + Default
+            + Copy
+            + PartialOrd;
 
         #[pallet::constant]
         type MaxSnapshot: Get<u32>;
@@ -75,16 +75,6 @@ pub mod pallet {
     #[pallet::getter(fn total_nodes)]
     pub (super) type TotalNodes <T:Config> = StorageValue<Value=TotalDowns>;
 
-    impl <T: Config> Error<T> {
-        fn dispatch_error(err:NodeOnboardingError) -> DispatchResult {
-            match err {
-                NodeOnboardingError::AlreadyExists => Err(Error::<T>::NodeAlreadyExists.into()),
-                NodeOnboardingError::InvalidFundForNode => Err(Error::<T>::NotEnoughFund.into()),
-                NodeOnboardingError::NodeIdNotFound => Err(Error::<T>::NodeNotFound.into())
-            }
-        }
-        
-    }
 
     pub type BalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
@@ -110,12 +100,19 @@ pub mod pallet {
             let who = ensure_signed(origin)?;
 
             //calculate stake balance  necessary for node running
-     
+            let needed_amount = calculate_stake_cost(node_infos.capacity as f32);
+            let stake_amount = (needed_amount * 1_000_000_000_000.0) as u128; // Assuming 18 decimal places
+            let stake_amount = T::Balance::from(stake_amount);
+            let free_balance = T::Currency::free_balance(&who);
             //add balance check, 
+            ensure!(stake_amount > free_balance, Error::<T>::NotEnoughFund);
 
         
             //valid_node_peer_id 
-            //transfer to escrow service
+
+
+            //reserved ba
+            T::Currency::reserve(&who, stake_amount)?;
         
             let mut user_nodes = NodesOnboarded::<T>::get(&who);
             let previous_node = user_nodes.iter().any(|nodes| nodes.node_id == node_infos.node_id);

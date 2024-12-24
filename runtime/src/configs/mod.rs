@@ -176,6 +176,20 @@ impl pallet_file_tracking::Config for Runtime {
 	type MaxFiles = ConstU32<1000>;
 }
 
+// impl pallet_node_tracker::Config for Runtime {
+// 	type RuntimeEvent = RuntimeEvent;
+
+// 	type WeightInfo = pallet_node_tracker::weightinfo::SubstrateWeight<Runtime>;
+
+// 	type Currency = Balances;
+
+// 	type Balance = Balance;
+
+// 	type MaxSnapshot=ConstU32<10>;
+
+// 	type MaxNodes=ConstU32<100>;
+// }
+
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 
 parameter_types! {

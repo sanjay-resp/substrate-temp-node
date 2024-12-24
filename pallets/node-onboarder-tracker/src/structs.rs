@@ -11,7 +11,7 @@ pub struct NodeInfo{
     pub owner: [u8;32],
     pub registered_time: u64,
     pub status: bool,
-    pub capacity: u64
+    pub capacity: u32
 }
 
 #[derive(Encode, Decode, TypeInfo, MaxEncodedLen, Clone, PartialEq, Eq)]
